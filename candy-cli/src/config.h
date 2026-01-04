@@ -27,6 +27,7 @@ private:
     std::string tun;
     std::string stun;
     std::string localhost;
+    std::string bind;
     int port = 0;
     int discovery = 0;
     int routeCost = 0;

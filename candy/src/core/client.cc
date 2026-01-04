@@ -137,4 +137,10 @@ void Client::shutdown() {
     this->running.store(false);
 }
 
+void Client::setBindAddress(const std::string &ip) {
+    if (ip.empty()) {
+        return;
+    }
+    this->peerManager.setBindAddress(ip);
+}
 } // namespace candy

@@ -37,6 +37,7 @@ public:
     void setRouteCost(int cost);
     void setPort(int port);
     void setLocalhost(std::string ip);
+    void setBindAddress(const std::string &ip);
     void setMtu(int mtu);
 
     void setExptTunAddress(const std::string &cidr);

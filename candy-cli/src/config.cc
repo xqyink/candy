@@ -25,6 +25,7 @@ Poco::JSON::Object arguments::json() {
         config.set("tun", this->tun);
         config.set("stun", this->stun);
         config.set("localhost", this->localhost);
+        config.set("bind", this->bind);
         config.set("discovery", this->discovery);
         config.set("route", this->routeCost);
         config.set("mtu", this->mtu);
@@ -58,7 +59,7 @@ int arguments::parse(int argc, char *argv[]) {
     program.add_argument("-r", "--route").help("routing cost").scan<'i', int>();
     program.add_argument("--discovery").help("discovery interval").scan<'i', int>();
     program.add_argument("--localhost").help("local ip");
-
+    program.add_argument("--bind").help("bind ip");
     program.add_argument("--no-timestamp").implicit_value(true);
     program.add_argument("--debug").implicit_value(true);
 
@@ -83,6 +84,7 @@ int arguments::parse(int argc, char *argv[]) {
         program.set_if_used("--tun", this->tun);
         program.set_if_used("--stun", this->stun);
         program.set_if_used("--localhost", this->localhost);
+        program.set_if_used("--bind", this->bind);
         program.set_if_used("--port", this->port);
         program.set_if_used("--mtu", this->mtu);
         program.set_if_used("--discovery", this->discovery);
@@ -132,6 +134,7 @@ void arguments::parseFile(std::string cfgFile) {
             {"port", [&](const std::string &value) { this->port = std::stoi(value); }},
             {"mtu", [&](const std::string &value) { this->mtu = std::stoi(value); }},
             {"localhost", [&](const std::string &value) { this->localhost = value; }},
+            {"bind", [&](const std::string &value) { this->bind = value; }},
         };
         auto trim = [](std::string str) {
             if (str.length() >= 2 && str.front() == '\"' && str.back() == '\"') {

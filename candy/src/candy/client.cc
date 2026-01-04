@@ -96,6 +96,7 @@ bool run(const std::string &id, const Poco::JSON::Object &config) {
         client->setStun(config.getValue<std::string>("stun"));
         client->setDiscoveryInterval(config.getValue<int>("discovery"));
         client->setRouteCost(config.getValue<int>("route")), client->setMtu(config.getValue<int>("mtu"));
+        client->setBindAddress(config.getValue<std::string>("bind"));
         client->setPort(config.getValue<int>("port"));
         client->setLocalhost(config.getValue<std::string>("localhost"));
         client->run();

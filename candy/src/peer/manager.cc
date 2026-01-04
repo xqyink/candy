@@ -53,6 +53,11 @@ int PeerManager::setLocalhost(const std::string &ip) {
     return 0;
 }
 
+int PeerManager::setBindAddress(const std::string &ip) {
+    this->bindAddress.fromString(ip);
+    return 0;
+}
+
 int PeerManager::run(Client *client) {
     this->client = client;
     this->localP2PDisabled = false;
@@ -330,7 +335,11 @@ int PeerManager::initSocket() {
     using Poco::Net::SocketAddress;
 
     try {
-        this->socket.bind(SocketAddress(AddressFamily::IPv4, this->listenPort));
+        if (!bindAddress.empty()) {
+            this->socket.bind(SocketAddress(bindAddress.toString(), this->listenPort));
+        } else {
+            this->socket.bind(SocketAddress(AddressFamily::IPv4, this->listenPort));
+        }
         this->socket.setSendBufferSize(16 * 1024 * 1024);
         this->socket.setReceiveBufferSize(16 * 1024 * 1024);
         spdlog::debug("listen port: {}", this->socket.address().port());

@@ -66,6 +66,7 @@ public:
     int setRouteCost(int cost);
     int setPort(int port);
     int setLocalhost(const std::string &ip);
+    int setBindAddress(const std::string &ip);
 
     int run(Client *client);
     int wait();
@@ -75,7 +76,8 @@ public:
 private:
     std::string password;
     IP4 localhost;
-
+    IP4 bindAddress;
+    
 public:
     int sendPubInfo(CoreMsg::PubInfo info);
     IP4 getTunIp();
