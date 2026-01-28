@@ -155,8 +155,7 @@ int WebSocketClient::handleWsConn() {
         std::string buffer;
         int flags = 0;
 
-        // receiveFrame 会对 ws 加锁,影响写操作,需要先确定可读
-        if (!this->ws->poll(Poco::Timespan(1, 0), Poco::Net::Socket::SELECT_READ)) {
+        if (!this->ws->poll(Poco::Timespan(1, 0), Poco::Net::Socket::SELECT_READ | Poco::Net::Socket::SELECT_ERROR)) {
             if (bootTime() - this->timestamp > 30000) {
                 spdlog::warn("websocket pong timeout");
                 return -1;
@@ -165,6 +164,11 @@ int WebSocketClient::handleWsConn() {
                 sendPingMessage();
             }
             return 0;
+        }
+
+        if (this->ws->getError()) {
+            spdlog::warn("websocket connection error: {}", this->ws->getError());
+            return -1;
         }
 
         buffer.resize(1500);
@@ -193,8 +197,7 @@ int WebSocketClient::handleWsConn() {
             handleWsMsg(std::move(buffer));
             return 0;
         }
-        spdlog::warn("handle ws conn failed: unexpected empty message");
-        return -1;
+        return 0;
     } catch (std::exception &e) {
         spdlog::warn("handle ws conn failed: {}", e.what());
         return -1;
@@ -390,6 +393,8 @@ int WebSocketClient::connect() {
             spdlog::critical("invalid websocket scheme: {}", wsServerUri);
             return -1;
         }
+        // Blocking mode may cause receiveFrame to hang and use 100% CPU
+        this->ws->setBlocking(false);
         this->timestamp = bootTime();
         this->pingMessage = fmt::format("candy::{}::{}::{}", CANDY_SYSTEM, CANDY_VERSION, hostName());
         spdlog::debug("client info: {}", this->pingMessage);
